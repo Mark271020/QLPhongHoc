@@ -1,0 +1,12 @@
+# Firebase credentials
+*.json
+!appsettings.json
+!package.json
+
+# Build outputs
+bin/
+obj/
+
+# IDE
+.vscode/
+.idea/

@@ -10,9 +10,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
             transition: background 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
         }
         
@@ -22,119 +30,49 @@
             color: #1e293b;
         }
         
-        body.light-mode .card {
-            background: #ffffff;
-            color: #1e293b;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border: none;
-        }
-        
-        body.light-mode .text-muted {
-            color: #64748b !important;
-        }
-        
-        body.light-mode .form-control,
-        body.light-mode .form-select {
-            background: white;
-            border-color: #e2e8f0;
-            color: #1e293b;
-        }
-        
-        body.light-mode .table {
-            color: #1e293b;
-        }
-        
-        body.light-mode .table thead th {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-        
-        body.light-mode .alert-success {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        body.light-mode .alert-danger {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        body.light-mode .bg-primary.bg-opacity-10 {
-            background-color: rgba(79, 70, 229, 0.1) !important;
-        }
-        
-        body.light-mode .bg-success.bg-opacity-10 {
-            background-color: rgba(16, 185, 129, 0.1) !important;
-        }
-        
-        body.light-mode .bg-danger.bg-opacity-10 {
-            background-color: rgba(239, 68, 68, 0.1) !important;
-        }
-        
-        body.light-mode .bg-info.bg-opacity-10 {
-            background-color: rgba(59, 130, 246, 0.1) !important;
-        }
-        
         /* Dark Mode */
         body.dark-mode {
             background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
             color: #f1f5f9;
         }
         
-        body.dark-mode .card {
-            background: #1e293b;
-            color: #f1f5f9;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border: 1px solid #334155;
+        /* Main content sẽ đẩy footer xuống */
+        .main-content {
+            flex: 1;
         }
         
-        body.dark-mode .text-muted {
-            color: #94a3b8 !important;
+        /* Footer cố định dưới cùng */
+        .footer {
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 20px 0;
+            margin-top: auto;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(5px);
         }
         
-        body.dark-mode .form-control,
-        body.dark-mode .form-select {
-            background: #0f172a;
-            border-color: #334155;
-            color: #f1f5f9;
+        /* Light Mode Footer */
+        body.light-mode .footer {
+            background: rgba(0,0,0,0.8);
         }
         
-        body.dark-mode .table {
-            color: #f1f5f9;
+        /* Dark Mode Footer */
+        body.dark-mode .footer {
+            background: rgba(0,0,0,0.9);
         }
         
-        body.dark-mode .table thead th {
-            background: #0f172a;
-            color: #f1f5f9;
+        .footer p {
+            margin: 0;
+            font-size: 14px;
         }
         
-        body.dark-mode .alert-success {
-            background: #064e3b;
-            color: #d1fae5;
+        .footer small {
+            font-size: 12px;
+            opacity: 0.7;
         }
         
-        body.dark-mode .alert-danger {
-            background: #7f1a1a;
-            color: #fee2e2;
-        }
-        
-        body.dark-mode .bg-primary.bg-opacity-10 {
-            background-color: rgba(79, 70, 229, 0.2) !important;
-        }
-        
-        body.dark-mode .bg-success.bg-opacity-10 {
-            background-color: rgba(16, 185, 129, 0.2) !important;
-        }
-        
-        body.dark-mode .bg-danger.bg-opacity-10 {
-            background-color: rgba(239, 68, 68, 0.2) !important;
-        }
-        
-        body.dark-mode .bg-info.bg-opacity-10 {
-            background-color: rgba(59, 130, 246, 0.2) !important;
-        }
-        
-        /* Common Styles */
+        /* Các style khác giữ nguyên */
         .theme-toggle {
             position: fixed;
             bottom: 20px;
@@ -179,6 +117,18 @@
             transform: translateY(-3px);
         }
         
+        body.light-mode .card {
+            background: #ffffff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+        }
+        
+        body.dark-mode .card {
+            background: #1e293b;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+        
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -202,24 +152,12 @@
             opacity: 0.9;
         }
         
-        .btn-secondary {
-            background: #6c757d;
-            border: none;
-        }
-        
         .toast-notification {
             position: fixed;
             top: 80px;
             right: 20px;
             z-index: 10000;
             min-width: 300px;
-        }
-        
-        .footer {
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 20px 0;
-            margin-top: 50px;
         }
         
         .loading-spinner {
@@ -248,16 +186,22 @@
             padding: 10px 15px;
         }
         
+        body.light-mode .form-control,
+        body.light-mode .form-select {
+            background: white;
+            border-color: #e2e8f0;
+            color: #1e293b;
+        }
+        
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        
         .alert {
             border-radius: 12px;
-        }
-        
-        .btn-close {
-            transition: transform 0.2s;
-        }
-        
-        .btn-close:hover {
-            transform: scale(1.1);
         }
         
         .progress {
@@ -265,7 +209,7 @@
             overflow: hidden;
         }
         
-        /* Dark Mode specific text colors */
+        /* Dark Mode text colors */
         body.dark-mode h1, 
         body.dark-mode h2, 
         body.dark-mode h3, 
@@ -277,59 +221,12 @@
         
         body.dark-mode p, 
         body.dark-mode span, 
-        body.dark-mode li, 
-        body.dark-mode .lead {
+        body.dark-mode li {
             color: #e2e8f0 !important;
         }
         
-        body.dark-mode .text-secondary {
-            color: #cbd5e1 !important;
-        }
-        
-        body.dark-mode .card-title {
-            color: #f1f5f9 !important;
-        }
-        
-        body.dark-mode .card-text {
-            color: #cbd5e1 !important;
-        }
-        
-        body.dark-mode .fw-bold {
-            color: #f1f5f9 !important;
-        }
-        
-        body.dark-mode .btn-outline-primary {
-            border: 2px solid #818cf8;
-            color: #818cf8;
-        }
-        
-        body.dark-mode .btn-outline-primary:hover {
-            background: #818cf8;
-            color: #0f172a;
-        }
-        
-        /* Light Mode specific text colors */
-        body.light-mode h1, 
-        body.light-mode h2, 
-        body.light-mode h3, 
-        body.light-mode h4, 
-        body.light-mode h5, 
-        body.light-mode h6 {
-            color: #1e293b !important;
-        }
-        
-        body.light-mode p, 
-        body.light-mode span, 
-        body.light-mode li {
-            color: #334155 !important;
-        }
-        
-        body.light-mode .lead {
-            color: #475569 !important;
-        }
-        
-        body.light-mode .text-secondary {
-            color: #4b5563 !important;
+        body.dark-mode .text-muted {
+            color: #94a3b8 !important;
         }
     </style>
 </head>
@@ -383,7 +280,8 @@
         </div>
     </nav>
     
-    <main class="container py-4">
+    <!-- Main Content với class main-content để đẩy footer xuống -->
+    <main class="container py-4 main-content">
         @if (TempData["Success"] != null)
         {
             <div class="toast-notification">
@@ -406,8 +304,9 @@
         @RenderBody()
     </main>
     
+    <!-- Footer luôn ở dưới cùng -->
     <footer class="footer">
-        <div class="container text-center">
+        <div class="container">
             <p class="mb-2">&copy; @DateTime.Now.Year - Hệ thống quản lý phòng học</p>
             <small>Powered by ASP.NET Core & Firebase</small>
         </div>
