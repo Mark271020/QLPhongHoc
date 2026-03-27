@@ -30,17 +30,26 @@ namespace QLPhongHoc.Services
                 
                 string fullPath = Path.Combine(Directory.GetCurrentDirectory(), path);
                 
+                // Kiểm tra file tồn tại
+                Console.WriteLine($"Đang tìm file tại: {fullPath}");
+                Console.WriteLine($"Các file trong thư mục hiện tại:");
+                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory()))
+                {
+                    Console.WriteLine($"  - {file}");
+                }
+                
                 if (!File.Exists(fullPath))
                 {
                     throw new Exception($"Không tìm thấy file JSON tại: {fullPath}");
                 }
                 
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", fullPath);
+                string jsonContent = File.ReadAllText(fullPath);
+                Console.WriteLine($"Đã đọc file JSON, độ dài: {jsonContent.Length} ký tự");
                 
                 _firestoreDb = new FirestoreDbBuilder
                 {
                     ProjectId = projectId,
-                    JsonCredentials = File.ReadAllText(fullPath)
+                    JsonCredentials = jsonContent
                 }.Build();
                 
                 Console.WriteLine($"✅ Kết nối Firebase thành công! Project: {projectId}");
