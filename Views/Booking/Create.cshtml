@@ -1,0 +1,125 @@
+@model QLPhongHoc.Models.Booking
+
+@{
+    ViewData["Title"] = "Đặt phòng học";
+    var rooms = ViewBag.Rooms as List<QLPhongHoc.Models.PhongHoc>;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>Đặt phòng học</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" id="bookingForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="RoomId" class="form-label fw-bold">
+                            <i class="fas fa-building text-primary me-1"></i>Chọn phòng học
+                        </label>
+                        <select asp-for="RoomId" class="form-select" required>
+                            <option value="">-- Chọn phòng --</option>
+                            @if (rooms != null)
+                            {
+                                foreach (var room in rooms.Where(r => r.IsAvailable))
+                                {
+                                    if (ViewBag.RoomId == room.Id)
+                                    {
+                                        <option value="@room.Id" selected>@room.TenPhong - @room.ViTri (Sức chứa: @room.SucChua)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@room.Id">@room.TenPhong - @room.ViTri (Sức chứa: @room.SucChua)</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="BookingDate" class="form-label fw-bold">
+                            <i class="fas fa-calendar-day text-primary me-1"></i>Ngày sử dụng
+                        </label>
+                        <input asp-for="BookingDate" type="date" class="form-control" required />
+                        <span asp-validation-for="BookingDate" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartTime" class="form-label fw-bold">
+                                <i class="fas fa-clock text-primary me-1"></i>Thời gian bắt đầu
+                            </label>
+                            <input asp-for="StartTime" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndTime" class="form-label fw-bold">
+                                <i class="fas fa-clock text-primary me-1"></i>Thời gian kết thúc
+                            </label>
+                            <input asp-for="EndTime" type="datetime-local" class="form-control" required />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Purpose" class="form-label fw-bold">
+                            <i class="fas fa-bullhorn text-primary me-1"></i>Mục đích sử dụng
+                        </label>
+                        <textarea asp-for="Purpose" class="form-control" rows="3" placeholder="Ví dụ: Học nhóm, hội thảo, thi cử..." required></textarea>
+                        <span asp-validation-for="Purpose" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Note" class="form-label fw-bold">
+                            <i class="fas fa-sticky-note text-primary me-1"></i>Ghi chú (tùy chọn)
+                        </label>
+                        <textarea asp-for="Note" class="form-control" rows="2" placeholder="Ghi chú thêm cho admin..."></textarea>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Lưu ý:</strong> Sau khi đặt phòng, vui lòng chờ admin duyệt. Bạn có thể theo dõi trạng thái trong mục "Lịch đặt".
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-check-circle me-2"></i>Xác nhận đặt phòng
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        const minDateTime = now.toISOString().slice(0, 16);
+        
+        const startTime = document.querySelector('input[name="StartTime"]');
+        const endTime = document.querySelector('input[name="EndTime"]');
+        
+        if (startTime) startTime.min = minDateTime;
+        if (endTime) endTime.min = minDateTime;
+        
+        if (startTime) {
+            startTime.addEventListener('change', function() {
+                if (endTime) {
+                    endTime.min = this.value;
+                    if (endTime.value < this.value) {
+                        endTime.value = this.value;
+                    }
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,129 @@
+@model IEnumerable<QLPhongHoc.Models.PhongHoc>
+
+@{
+    ViewData["Title"] = "Danh sách phòng học";
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold">
+            <i class="fas fa-building me-2 text-primary"></i>Danh sách phòng học
+        </h2>
+        <p class="text-muted">Quản lý và đặt phòng học dễ dàng</p>
+    </div>
+    <div class="col-md-4 text-end">
+        @if (isAdmin)
+        {
+            <a asp-action="Create" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle me-2"></i>Thêm phòng mới
+            </a>
+        }
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form asp-action="Index" method="get" class="d-flex gap-2">
+            <div class="flex-grow-1 position-relative">
+                <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" 
+                       class="form-control ps-5" placeholder="Tìm kiếm phòng học theo tên, vị trí..." />
+            </div>
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-search me-1"></i>Tìm
+            </button>
+            <a asp-action="Index" class="btn btn-secondary px-4">
+                <i class="fas fa-sync-alt me-1"></i>Làm mới
+            </a>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <span class="badge bg-info text-dark p-2">
+            <i class="fas fa-door-open me-1"></i> Tổng số: @Model.Count() phòng
+        </span>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <i class="fas fa-door-closed fa-5x text-muted mb-3"></i>
+        <h4 class="text-muted">Chưa có phòng học nào</h4>
+        @if (isAdmin)
+        {
+            <a asp-action="Create" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Thêm phòng đầu tiên
+            </a>
+        }
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header @(item.IsAvailable ? "bg-success" : "bg-danger") text-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">@item.TenPhong</h5>
+                            <i class="fas @(item.IsAvailable ? "fa-check-circle" : "fa-times-circle") fa-lg"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-map-marker-alt text-primary me-2" style="width: 20px;"></i>
+                                <span><strong>Vị trí:</strong> @item.ViTri</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-chair text-primary me-2" style="width: 20px;"></i>
+                                <span><strong>Sức chứa:</strong> @item.SucChua người</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.TrangThietBi))
+                            {
+                                <div class="d-flex align-items-start mb-2">
+                                    <i class="fas fa-tv text-primary me-2 mt-1" style="width: 20px;"></i>
+                                    <span><strong>Thiết bị:</strong> @item.TrangThietBi</span>
+                                </div>
+                            }
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar text-primary me-2" style="width: 20px;"></i>
+                                <span><strong>Ngày tạo:</strong> @item.CreatedAt.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger") px-3 py-2">
+                                <i class="fas @(item.IsAvailable ? "fa-door-open" : "fa-door-closed") me-1"></i>
+                                @(item.IsAvailable ? "Đang trống" : "Đang sử dụng")
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 pt-0 pb-3">
+                        <div class="d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info flex-grow-1">
+                                <i class="fas fa-info-circle me-1"></i>Chi tiết
+                            </a>
+                            @if (isAdmin)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning flex-grow-1">
+                                    <i class="fas fa-edit me-1"></i>Sửa
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger flex-grow-1">
+                                    <i class="fas fa-trash me-1"></i>Xóa
+                                </a>
+                            }
+                            else if (item.IsAvailable)
+                            {
+                                <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@item.Id" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-calendar-plus me-1"></i>Đặt phòng
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

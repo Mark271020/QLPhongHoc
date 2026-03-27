@@ -1,0 +1,49 @@
+@model Dictionary<string, object>
+
+@{
+    ViewData["Title"] = "Thống kê phòng học";
+}
+
+<h2>Thống kê phòng học</h2>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Tổng số phòng</h5>
+                <h2>@Model["TotalRooms"]</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Phòng trống</h5>
+                <h2>@Model["AvailableRooms"]</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5>Đang sử dụng</h5>
+                <h2>@Model["UnavailableRooms"]</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5>Tổng sức chứa</h5>
+                <h2>@Model["TotalCapacity"]</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="/PhongHoc" class="btn btn-secondary">Quay lại</a>
+</div>
