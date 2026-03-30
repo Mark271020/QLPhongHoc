@@ -20,44 +20,19 @@ namespace QLPhongHoc.Services
         {
             try
             {
-                // DEBUG: In ra tất cả biến môi trường
-                Console.WriteLine("=== ENVIRONMENT VARIABLES ===");
-                foreach (var env in Environment.GetEnvironmentVariables())
-                {
-                    Console.WriteLine($"{env.Key} = {env.Value}");
-                }
-                
                 string path = configuration["Firebase:CredentialPath"];
                 string projectId = configuration["Firebase:ProjectId"];
-                
-                Console.WriteLine($"Path từ config: {path}");
-                Console.WriteLine($"ProjectId từ config: {projectId}");
                 
                 if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(projectId))
                 {
                     throw new Exception("Chưa cấu hình Firebase trong appsettings.json");
                 }
                 
-                // Thử lấy từ biến môi trường FIREBASE_CREDENTIALS
-                string envJson = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS");
-                if (!string.IsNullOrEmpty(envJson))
-                {
-                    Console.WriteLine("Dùng credentials từ biến môi trường FIREBASE_CREDENTIALS");
-                    _firestoreDb = new FirestoreDbBuilder
-                    {
-                        ProjectId = projectId,
-                        JsonCredentials = envJson
-                    }.Build();
-                    Console.WriteLine($"✅ Kết nối Firebase thành công từ biến môi trường!");
-                    return;
-                }
-                
-                // Nếu không, đọc từ file
                 string fullPath = Path.Combine(Directory.GetCurrentDirectory(), path);
-                Console.WriteLine($"Đang tìm file tại: {fullPath}");
                 
-                // Liệt kê file trong thư mục
-                Console.WriteLine("Các file trong thư mục hiện tại:");
+                // Kiểm tra file tồn tại
+                Console.WriteLine($"Đang tìm file tại: {fullPath}");
+                Console.WriteLine($"Các file trong thư mục hiện tại:");
                 foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory()))
                 {
                     Console.WriteLine($"  - {file}");
