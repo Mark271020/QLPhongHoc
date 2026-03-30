@@ -1,52 +1,82 @@
 @model QLPhongHoc.Models.PhongHoc
 
 @{
-    ViewData["Title"] = "Thêm phòng học";
+    ViewData["Title"] = "Thêm phòng học mới";
 }
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <div class="mb-3">
-                <label asp-for="TenPhong" class="form-label"></label>
-                <input asp-for="TenPhong" class="form-control" />
-                <span asp-validation-for="TenPhong" class="text-danger"></span>
-            </div>
-            
-            <div class="mb-3">
-                <label asp-for="ViTri" class="form-label"></label>
-                <input asp-for="ViTri" class="form-control" />
-                <span asp-validation-for="ViTri" class="text-danger"></span>
-            </div>
-            
-            <div class="mb-3">
-                <label asp-for="SucChua" class="form-label"></label>
-                <input asp-for="SucChua" class="form-control" />
-                <span asp-validation-for="SucChua" class="text-danger"></span>
-            </div>
-            
-            <div class="mb-3">
-                <label asp-for="TrangThietBi" class="form-label"></label>
-                <textarea asp-for="TrangThietBi" class="form-control"></textarea>
-            </div>
-            
-            <div class="mb-3">
-                <label asp-for="MoTa" class="form-label"></label>
-                <textarea asp-for="MoTa" class="form-control"></textarea>
-            </div>
-            
-            <div class="mb-3 form-check">
-                <input asp-for="IsAvailable" class="form-check-input" />
-                <label asp-for="IsAvailable" class="form-check-label"></label>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Lưu</button>
-            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-        </form>
+@if (!User.IsInRole("Admin"))
+{
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle"></i> Bạn không có quyền truy cập trang này!
     </div>
-</div>
+}
+else
+{
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Thêm phòng học mới</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="TenPhong" class="form-label fw-bold"></label>
+                            <input asp-for="TenPhong" class="form-control" placeholder="VD: Phòng A101" />
+                            <span asp-validation-for="TenPhong" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="ViTri" class="form-label fw-bold"></label>
+                            <input asp-for="ViTri" class="form-control" placeholder="VD: Tầng 1, nhà A" />
+                            <span asp-validation-for="ViTri" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="SucChua" class="form-label fw-bold"></label>
+                            <input asp-for="SucChua" class="form-control" type="number" placeholder="Số lượng học viên" />
+                            <span asp-validation-for="SucChua" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="TrangThietBi" class="form-label fw-bold"></label>
+                            <textarea asp-for="TrangThietBi" class="form-control" rows="3" 
+                                      placeholder="Máy chiếu, bảng, máy lạnh, ..."></textarea>
+                            <span asp-validation-for="TrangThietBi" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="MoTa" class="form-label fw-bold"></label>
+                            <textarea asp-for="MoTa" class="form-control" rows="2" 
+                                      placeholder="Mô tả chi tiết về phòng học"></textarea>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsAvailable" class="form-check-input" />
+                            <label asp-for="IsAvailable" class="form-check-label">Đang trống</label>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Lưu ý: Chỉ Admin mới có quyền thêm phòng.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Lưu phòng học
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

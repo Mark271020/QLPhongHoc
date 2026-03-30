@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace QLPhongHoc.Services
@@ -32,40 +31,25 @@ namespace QLPhongHoc.Services
                 string fullPath = Path.Combine(Directory.GetCurrentDirectory(), path);
                 
                 Console.WriteLine($"Đang tìm file tại: {fullPath}");
+                Console.WriteLine("Các file trong thư mục hiện tại:");
+                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory()))
+                {
+                    Console.WriteLine($"  - {file}");
+                }
                 
                 if (!File.Exists(fullPath))
                 {
-                    // Thử tìm file JSON khác trong thư mục
-                    var jsonFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.json");
-                    Console.WriteLine("Các file JSON trong thư mục:");
-                    foreach (var f in jsonFiles)
-                    {
-                        Console.WriteLine($"  - {Path.GetFileName(f)}");
-                    }
                     throw new Exception($"Không tìm thấy file JSON tại: {fullPath}");
                 }
                 
                 string jsonContent = File.ReadAllText(fullPath);
                 Console.WriteLine($"Đã đọc file JSON, độ dài: {jsonContent.Length} ký tự");
                 
-                // Tạo FirestoreDb với timeout dài hơn
-                var builder = new FirestoreDbBuilder
+                _firestoreDb = new FirestoreDbBuilder
                 {
                     ProjectId = projectId,
-                    JsonCredentials = jsonContent,
-                    // Thêm timeout để tránh lỗi connection
-                    ChannelCredentials = Grpc.Core.ChannelCredentials.SecureSsl,
-                    CallSettings = new Grpc.Core.CallSettings(
-                        deadline: DateTime.UtcNow.AddSeconds(60),
-                        cancellationToken: default,
-                        headers: null,
-                        writeOptions: null,
-                        propagationToken: null,
-                        credentials: null,
-                        flowControlSettings: null)
-                };
-                
-                _firestoreDb = builder.Build();
+                    JsonCredentials = jsonContent
+                }.Build();
                 
                 Console.WriteLine($"✅ Kết nối Firebase thành công! Project: {projectId}");
             }
@@ -97,7 +81,6 @@ namespace QLPhongHoc.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi GetAllPhongHocAsync: {ex.Message}");
                 throw new Exception($"Lỗi khi lấy danh sách phòng: {ex.Message}");
             }
         }
@@ -197,24 +180,16 @@ namespace QLPhongHoc.Services
 
         public async Task<User> GetUserByUsernameAsync(string username)
         {
-            try
+            var query = _firestoreDb.Collection(UserCollection).WhereEqualTo("Username", username);
+            var snapshot = await query.GetSnapshotAsync();
+            
+            if (snapshot.Documents.Count > 0)
             {
-                var query = _firestoreDb.Collection(UserCollection).WhereEqualTo("Username", username);
-                var snapshot = await query.GetSnapshotAsync();
-                
-                if (snapshot.Documents.Count > 0)
-                {
-                    var user = snapshot.Documents[0].ConvertTo<User>();
-                    user.Id = snapshot.Documents[0].Id;
-                    return user;
-                }
-                return null;
+                var user = snapshot.Documents[0].ConvertTo<User>();
+                user.Id = snapshot.Documents[0].Id;
+                return user;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Lỗi GetUserByUsernameAsync: {ex.Message}");
-                throw;
-            }
+            return null;
         }
 
         public async Task<User> GetUserByEmailAsync(string email)

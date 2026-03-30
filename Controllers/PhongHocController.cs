@@ -15,35 +15,33 @@ namespace QLPhongHoc.Controllers
             _firebaseService = firebaseService;
         }
 
-        // Tất cả người dùng đều có thể xem danh sách phòng
         public async Task<IActionResult> Index(string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var list = await _firebaseService.GetAllPhongHocAsync();
+            var phongHocs = await _firebaseService.GetAllPhongHocAsync();
             
             if (!string.IsNullOrEmpty(searchString))
             {
-                list = await _firebaseService.SearchPhongHocAsync(searchString);
+                phongHocs = await _firebaseService.SearchPhongHocAsync(searchString);
             }
             
-            return View(list);
+            return View(phongHocs);
         }
 
-        // Tất cả người dùng đều có thể xem chi tiết phòng
         public async Task<IActionResult> Details(string id)
         {
             if (id == null) return NotFound();
             
-            var item = await _firebaseService.GetPhongHocByIdAsync(id);
-            if (item == null) return NotFound();
+            var phongHoc = await _firebaseService.GetPhongHocByIdAsync(id);
+            if (phongHoc == null) return NotFound();
             
-            return View(item);
+            return View(phongHoc);
         }
 
-        // CHỈ ADMIN mới được tạo phòng
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            Console.WriteLine("=== VÀO TRANG CREATE ===");
             return View();
         }
 
@@ -52,25 +50,56 @@ namespace QLPhongHoc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("TenPhong,ViTri,SucChua,TrangThietBi,IsAvailable,MoTa")] PhongHoc phongHoc)
         {
+            Console.WriteLine("=== BẮT ĐẦU THÊM PHÒNG ===");
+            Console.WriteLine($"Tên phòng: {phongHoc.TenPhong}");
+            Console.WriteLine($"Vị trí: {phongHoc.ViTri}");
+            Console.WriteLine($"Sức chứa: {phongHoc.SucChua}");
+            Console.WriteLine($"IsAvailable: {phongHoc.IsAvailable}");
+            
             if (ModelState.IsValid)
             {
-                await _firebaseService.AddPhongHocAsync(phongHoc);
-                TempData["Success"] = "Thêm phòng học thành công!";
-                return RedirectToAction(nameof(Index));
+                Console.WriteLine("ModelState hợp lệ");
+                try
+                {
+                    Console.WriteLine("Đang gọi AddPhongHocAsync...");
+                    string newId = await _firebaseService.AddPhongHocAsync(phongHoc);
+                    Console.WriteLine($"✅ THÀNH CÔNG! ID mới: {newId}");
+                    TempData["Success"] = $"✅ Đã thêm phòng '{phongHoc.TenPhong}' thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ LỖI: {ex.Message}");
+                    Console.WriteLine($"❌ Stack trace: {ex.StackTrace}");
+                    TempData["Error"] = $"❌ Lỗi: {ex.Message}";
+                    return View(phongHoc);
+                }
             }
+            else
+            {
+                Console.WriteLine("ModelState KHÔNG hợp lệ:");
+                foreach (var key in ModelState.Keys)
+                {
+                    var errors = ModelState[key].Errors;
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"  - {key}: {error.ErrorMessage}");
+                    }
+                }
+            }
+            
             return View(phongHoc);
         }
 
-        // CHỈ ADMIN mới được sửa phòng
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null) return NotFound();
             
-            var item = await _firebaseService.GetPhongHocByIdAsync(id);
-            if (item == null) return NotFound();
+            var phongHoc = await _firebaseService.GetPhongHocByIdAsync(id);
+            if (phongHoc == null) return NotFound();
             
-            return View(item);
+            return View(phongHoc);
         }
 
         [Authorize(Roles = "Admin")]
@@ -82,23 +111,31 @@ namespace QLPhongHoc.Controllers
             
             if (ModelState.IsValid)
             {
-                await _firebaseService.UpdatePhongHocAsync(id, phongHoc);
-                TempData["Success"] = "Cập nhật thành công!";
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _firebaseService.UpdatePhongHocAsync(id, phongHoc);
+                    TempData["Success"] = $"✅ Đã cập nhật phòng '{phongHoc.TenPhong}' thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = $"❌ Lỗi: {ex.Message}";
+                    return View(phongHoc);
+                }
             }
+            
             return View(phongHoc);
         }
 
-        // CHỈ ADMIN mới được xóa phòng
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null) return NotFound();
             
-            var item = await _firebaseService.GetPhongHocByIdAsync(id);
-            if (item == null) return NotFound();
+            var phongHoc = await _firebaseService.GetPhongHocByIdAsync(id);
+            if (phongHoc == null) return NotFound();
             
-            return View(item);
+            return View(phongHoc);
         }
 
         [Authorize(Roles = "Admin")]
@@ -106,12 +143,20 @@ namespace QLPhongHoc.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            await _firebaseService.DeletePhongHocAsync(id);
-            TempData["Success"] = "Xóa thành công!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var phongHoc = await _firebaseService.GetPhongHocByIdAsync(id);
+                await _firebaseService.DeletePhongHocAsync(id);
+                TempData["Success"] = $"✅ Đã xóa phòng '{phongHoc?.TenPhong}' thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"❌ Lỗi: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // CHỈ ADMIN mới xem thống kê
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Statistics()
         {
