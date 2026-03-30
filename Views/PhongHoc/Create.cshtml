@@ -12,20 +12,6 @@
 }
 else
 {
-    <form asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-    
-    <!-- THÊM DÒNG NÀY -->
-    <input type="hidden" asp-for="Id" />
-    
-    <div class="mb-3">
-        <label asp-for="TenPhong" class="form-label fw-bold"></label>
-        <input asp-for="TenPhong" class="form-control" />
-        <span asp-validation-for="TenPhong" class="text-danger"></span>
-    </div>
-    
-    ...
-</form>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
@@ -35,6 +21,8 @@ else
                 <div class="card-body">
                     <form asp-action="Create" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        
+                        <!-- Không cần hidden input cho Id -->
                         
                         <div class="mb-3">
                             <label asp-for="TenPhong" class="form-label fw-bold"></label>

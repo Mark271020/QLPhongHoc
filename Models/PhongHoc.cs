@@ -6,6 +6,7 @@ namespace QLPhongHoc.Models
     [FirestoreData]
     public class PhongHoc
     {
+        // KHÔNG có [Required] ở đây
         public string Id { get; set; }
 
         [FirestoreProperty]

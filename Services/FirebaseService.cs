@@ -122,19 +122,25 @@ namespace QLPhongHoc.Services
         }
 
         public async Task<bool> UpdatePhongHocAsync(string id, PhongHoc phongHoc)
+{
+    try
+    {
+        DocumentReference docRef = _firestoreDb.Collection(PhongHocCollection).Document(id);
+        
+        // Đảm bảo CreatedAt là UTC
+        if (phongHoc.CreatedAt.Kind != DateTimeKind.Utc)
         {
-            try
-            {
-                DocumentReference docRef = _firestoreDb.Collection(PhongHocCollection).Document(id);
-                await docRef.SetAsync(phongHoc, SetOptions.MergeAll);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Lỗi khi cập nhật phòng: {ex.Message}");
-            }
+            phongHoc.CreatedAt = DateTime.SpecifyKind(phongHoc.CreatedAt, DateTimeKind.Utc);
         }
-
+        
+        await docRef.SetAsync(phongHoc, SetOptions.MergeAll);
+        return true;
+    }
+    catch (Exception ex)
+    {
+        throw new Exception($"Lỗi khi cập nhật phòng: {ex.Message}");
+    }
+}
         public async Task<bool> DeletePhongHocAsync(string id)
         {
             try

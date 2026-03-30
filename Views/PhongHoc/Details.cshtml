@@ -1,0 +1,84 @@
+@model QLPhongHoc.Models.PhongHoc
+
+@{
+    ViewData["Title"] = "Chi tiết phòng học";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-info-circle"></i> Chi tiết phòng học</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.TenPhong)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.TenPhong)
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.ViTri)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.ViTri)
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.SucChua)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.SucChua)
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.TrangThietBi)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.TrangThietBi)
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.MoTa)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Html.DisplayFor(model => model.MoTa)
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.IsAvailable)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @if (Model.IsAvailable)
+                        {
+                            <span class="badge bg-success">Đang trống</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Đang sử dụng</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">
+                        @Html.DisplayNameFor(model => model.CreatedAt)
+                    </dt>
+                    <dd class="col-sm-9">
+                        @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <div class="btn-group">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
